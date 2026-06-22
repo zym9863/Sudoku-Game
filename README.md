@@ -1,70 +1,59 @@
-# 数独游戏 (Sudoku Game)
+# Sudoku Game
 
-[English](README_EN.md) | 简体中文
+一个完整的全栈数独游戏，包含 React 前端、FastAPI 后端、SQLite 持久化、单元测试和 API 接口测试。
 
-一个美观、交互式的网页数独游戏，具有多种难度级别和用户友好的界面。
+## How to Run
 
-## 功能特点
+在项目根目录执行：
 
-- 🎮 三种难度级别：简单、中等和困难
-- 🎯 自动生成有效的数独谜题
-- ✅ 实时错误检查和完整解决方案验证
-- 🎨 现代化、响应式设计，适配各种设备
-- ⌨️ 键盘输入支持
-- 🔄 平滑的动画和视觉反馈
-
-## 技术栈
-
-- HTML5
-- CSS3 (使用现代CSS特性如Grid布局、Flexbox和CSS变量)
-- 原生JavaScript (ES6+)
-- 响应式设计
-
-## 如何使用
-
-1. 克隆或下载此仓库
-2. 在浏览器中打开`index.html`文件
-3. 选择难度级别并点击"新游戏"开始
-4. 点击空白格子并使用键盘输入数字(1-9)
-5. 使用退格键或删除键清除单元格
-6. 完成后点击"检查"按钮验证解答
-
-## 游戏规则
-
-数独是一种逻辑性游戏，目标是在9×9的网格中填入数字1到9，使得每行、每列和每个3×3的子网格中的数字不重复。
-
-## 项目结构
-
-```
-/
-├── index.html      # 游戏主页面
-├── style.css       # 样式表
-├── script.js       # 游戏逻辑
-├── README.md       # 项目说明（中文）
-└── README_EN.md    # 项目说明（英文）
+```bash
+docker compose up
 ```
 
-## 开发特性
+该命令会启动前端和后端服务，并通过 Docker named volume `sudoku-data` 保存 SQLite 数据。
 
-- 使用回溯算法生成有效的数独谜题
-- 实现了数独求解器来验证谜题的唯一解
-- 使用CSS Grid布局创建数独网格
-- 平滑的CSS过渡和动画效果
-- 完全响应式设计，适配移动设备
+## Services List
 
-## 未来计划
+| Service | Address | Description |
+| --- | --- | --- |
+| Frontend | http://localhost:3000 | 数独游戏界面 |
+| Backend API | http://localhost:8000 | FastAPI 服务 |
+| API Docs | http://localhost:8000/docs | OpenAPI 文档 |
+| Health Check | http://localhost:8000/api/health | 服务健康检查 |
 
-- [ ] 添加计时器功能
-- [ ] 实现游戏存档功能
-- [ ] 添加提示系统
-- [ ] 支持触摸设备的手势输入
-- [ ] 添加深色模式
-- [ ] 多语言支持
+## Verification Method
 
-## 许可证
+运行完整测试：
 
-MIT
+```bash
+bash run_tests.sh
+```
 
----
+测试内容包括：
 
-欢迎贡献代码、报告问题或提出改进建议！
+- `unit_tests/`：数独求解、唯一解校验、题盘生成、服务层状态变更、SQLite 仓储读写。
+- `API_tests/`：健康检查、创建游戏、读取游戏、恢复活跃游戏、更新格子、检查答案、提示、统计和错误响应。
+- `frontend/src/**/*.test.*`：前端数独工具函数和棋盘组件渲染/交互。
+
+API 测试覆盖所有公开接口，覆盖率为 100% 的接口面。
+
+## Gameplay
+
+- 首次访问会自动创建一个简单难度游戏。
+- 浏览器会保存 `playerId`，后端通过 SQLite 保存当前局和统计信息。
+- 支持简单、中等、困难三种难度。
+- 支持填数、清除、笔记、冲突高亮、答案检查、提示、计时和完成统计。
+
+## API Summary
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | 健康检查 |
+| `POST` | `/api/games` | 创建新游戏 |
+| `GET` | `/api/games/active/{playerId}` | 恢复玩家活跃游戏 |
+| `GET` | `/api/games/{gameId}` | 读取游戏 |
+| `PATCH` | `/api/games/{gameId}/cell` | 更新数字或笔记 |
+| `POST` | `/api/games/{gameId}/check` | 检查当前答案 |
+| `POST` | `/api/games/{gameId}/hint` | 获取并填入提示 |
+| `GET` | `/api/stats/{playerId}` | 读取玩家统计 |
+
